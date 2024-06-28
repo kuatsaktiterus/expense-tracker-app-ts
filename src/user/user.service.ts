@@ -6,6 +6,7 @@ import { LoginUserRequest, RegisterUserRequest, UserResponse } from '../model/us
 import { Logger } from 'winston';
 import { UserValidation } from './user.validation';
 import * as bcrypt from 'bcrypt';
+import { v4 as uuid } from "uuid";
 
 @Injectable()
 export class UserService {
@@ -45,6 +46,7 @@ export class UserService {
   }
 
   async login(request: LoginUserRequest): Promise<UserResponse> {
+    this.logger.debug(`UserService.login(${JSON.stringify(request)})`);
     const loginRequest: LoginUserRequest = this.validationService.validate(UserValidation.LOGIN, request);
 
     let user = await this.prismaService.user.findUnique({
@@ -53,8 +55,31 @@ export class UserService {
       },
     });
 
-    if (!user) {
 
+    if (!user) {
+      this.identificationFailed();
+    }
+
+    const isPasswordValid = await bcrypt.compare(loginRequest.password, user.password);
+    this.logger.debug(isPasswordValid);
+
+    if (!isPasswordValid) {
+      this.identificationFailed();
+    }
+
+    user = await this.prismaService.user.update({
+      where: {
+        username: loginRequest.username
+      },
+      data: {
+        token: uuid(),
+      }
+    });
+
+    return {
+      id: user.id,
+      username: user.username,
+      token: user.token
     }
   }
 }
