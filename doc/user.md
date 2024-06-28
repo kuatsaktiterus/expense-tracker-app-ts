@@ -18,8 +18,8 @@ Response Body (success):
 ```json
 {
   "data": {
-    "username": "ricky",
-    "password": "rahasia"
+    "id": 1,
+    "username": "ricky"
   }
 }
 ```
@@ -96,7 +96,7 @@ Response Body (failed):
 
 ## EDIT CURRENT USER
 
-Endpoint: PATCH /api/v1/users/current
+Endpoint: PUT /api/v1/users/current
 
 Headers:
 
@@ -106,7 +106,6 @@ Request Body:
 
 ```json
 {
-  "id": 1,
   "username": "ricky", // optional
   "password": "rahasia" // optional
 }
