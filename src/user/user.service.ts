@@ -83,6 +83,13 @@ export class UserService {
     }
   }
 
+  async get(user: User): Promise<UserResponse> {
+    return {
+      id: user.id,
+      username: user.username,
+    }
+  }
+
   async update(user: User, request: UpdateUserRequest): Promise<UserResponse> {
     this.logger.debug(`UserService.update(${user.id}, ${request.username})`);
     const updateRequest: UpdateUserRequest = this.validationService.validate(UserValidation.UPDATE, request);
