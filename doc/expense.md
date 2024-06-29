@@ -14,7 +14,8 @@ Request Body (success):
 {
   "expense": 3000000,
   "expense_name": "rahasia",
-  "date_of_expense": 27-06-2024
+  "date_of_expense": 27-06-2024,
+  "id_user": 1
 }
 ```
 
@@ -25,7 +26,8 @@ Response Body:
   "id": 1,
   "expense": 3000000,
   "expense_name": "rahasia",
-  "date_of_expense": 27-06-2024
+  "date_of_expense": 27-06-2024,
+  "id_user": 1
 }
 ```
 
@@ -53,14 +55,16 @@ Response Body (success):
     {
       "id": 1,
       "expense": 3000000,
-      "expenses_name": "beli hp baru",
-      "date_of_expense": 24-06-2024
+      "expense_name": "beli hp baru",
+      "date_of_expense": 24-06-2024,
+      "id_user": 1
     },
     {
       "id": 2,
       "expense": 3000000,
-      "expenses_name": "beli hp baru",
-      "date_of_expense": 24-06-2024
+      "expense_name": "beli hp baru",
+      "date_of_expense": 24-06-2024,
+      "id_user": 1
     }
   ],
   "paging": {
@@ -94,8 +98,9 @@ Response Body (success):
     "data":{
       "id": 1,
       "expense": 3000000,
-      "expenses_name": "beli hp baru",
-      "date_of_expense": 24-06-2024
+      "expense_name": "beli hp baru",
+      "date_of_expense": 24-06-2024,
+      "id_user": 1
     }
 }
 ```
@@ -122,7 +127,7 @@ Request Body:
 {
   "data": {
     "expense": 3000000, // optional
-    "expenses_name": "beli hp baru", // optional
+    "expense_name": "beli hp baru", // optional
     "date_of_expense": 24-06-2024 // optional
   }
 }
@@ -135,8 +140,9 @@ Response Body (success):
   "data": {
     "id": 1,
     "expense": 3000000,
-    "expenses_name": "beli hp baru",
-    "date_of_expense": 24-06-2024
+    "expense_name": "beli hp baru",
+    "date_of_expense": 24-06-2024,
+    "id_user": 1
   }
 }
 ```

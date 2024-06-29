@@ -22,6 +22,7 @@ describe('USER Controller', () => {
 
     testService = app.get(TestService);
     logger = app.get(WINSTON_MODULE_PROVIDER);
+    await testService.deleteAll();
   });
 
   describe('POST /api/users', () => {

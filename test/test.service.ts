@@ -7,6 +7,11 @@ import { User } from "@prisma/client";
 export class TestService {
   constructor(private prismaService: PrismaService) { }
 
+  async deleteAll() {
+    await this.deleteExpense();
+    await this.deleteUser();
+  }
+
   async deleteUser() {
     await this.prismaService.user.deleteMany({
       where: {
@@ -32,5 +37,9 @@ export class TestService {
     return await this.prismaService.user.findUnique({
       where: { username: 'test' }
     });
+  }
+
+  async deleteExpense() {
+    await this.prismaService.expense.deleteMany();
   }
 }
