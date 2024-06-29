@@ -2,11 +2,12 @@ import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { PrismaService } from '../common/prisma.service';
 import { ValidationService } from '../common/validation.service';
-import { LoginUserRequest, RegisterUserRequest, UserResponse } from '../model/user.model';
+import { LoginUserRequest, RegisterUserRequest, UpdateUserRequest, UserResponse } from '../model/user.model';
 import { Logger } from 'winston';
 import { UserValidation } from './user.validation';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuid } from "uuid";
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -61,7 +62,6 @@ export class UserService {
     }
 
     const isPasswordValid = await bcrypt.compare(loginRequest.password, user.password);
-    this.logger.debug(isPasswordValid);
 
     if (!isPasswordValid) {
       this.identificationFailed();
@@ -80,6 +80,32 @@ export class UserService {
       id: user.id,
       username: user.username,
       token: user.token
+    }
+  }
+
+  async update(user: User, request: UpdateUserRequest): Promise<UserResponse> {
+    this.logger.debug(`UserService.update(${user.id}, ${request.username})`);
+    const updateRequest: UpdateUserRequest = this.validationService.validate(UserValidation.UPDATE, request);
+
+    if (updateRequest.username) {
+      user.username = updateRequest.username;
+    }
+
+    if (updateRequest.password) {
+      user.password = await bcrypt.hash(updateRequest.password, 10);
+    }
+
+    const result = await this.prismaService.user.update({
+      where: { id: user.id },
+      data: {
+        username: user.username,
+        password: user.password
+      },
+    });
+
+    return {
+      id: result.id,
+      username: result.username,
     }
   }
 }

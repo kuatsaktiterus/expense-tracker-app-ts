@@ -104,4 +104,51 @@ describe('USER Controller', () => {
       expect(response.body.data.token).toBeDefined();
     });
   });
+
+  describe('PUT /api/users/current', () => {
+    beforeEach(async () => {
+      await testService.deleteUser();
+      await testService.createUser();
+    });
+
+    it('should be rejected if request is invalid', async () => {
+      const response = await request(app.getHttpServer())
+        .put('/api/v1/users/current/')
+        .set('Authorization', 'test')
+        .send({
+          username: '',
+          password: '',
+        });
+      logger.info(response.body);
+
+      expect(response.status).toBe(400);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to update username', async () => {
+      const response = await request(app.getHttpServer())
+        .put(`/api/v1/users/current`)
+        .set('Authorization', 'test')
+        .send({
+          username: 'test updated',
+        });
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.username).toBe('test updated');
+    });
+
+    it('should be able to update password', async () => {
+      const response = await request(app.getHttpServer())
+        .put(`/api/v1/users/current`)
+        .set('Authorization', 'test')
+        .send({
+          password: 'test updated'
+        });
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.username).toBe('test');
+    });
+  });
 });
