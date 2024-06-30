@@ -1,13 +1,27 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { LoginUserRequest, RegisterUserRequest, UserResponse } from '../model/user.model';
+import {
+  LoginUserRequest,
+  RegisterUserRequest,
+  UserResponse,
+} from '../model/user.model';
 import { WebResponse } from '../model/web.model';
 import { Auth } from '../common/auth.decorator';
 import { User } from '@prisma/client';
 
 @Controller('/api/v1/users')
 export class UserController {
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   @Post()
   @HttpCode(200)
@@ -15,7 +29,6 @@ export class UserController {
     @Body() request: RegisterUserRequest,
   ): Promise<WebResponse<UserResponse>> {
     const result = await this.userService.register(request);
-
 
     return {
       data: result,
@@ -36,9 +49,7 @@ export class UserController {
 
   @Get('/current')
   @HttpCode(200)
-  async get(
-    @Auth() user: User,
-  ): Promise<WebResponse<UserResponse>> {
+  async get(@Auth() user: User): Promise<WebResponse<UserResponse>> {
     const result = await this.userService.get(user);
 
     return {
@@ -61,9 +72,7 @@ export class UserController {
 
   @Delete('/current')
   @HttpCode(200)
-  async logout(
-    @Auth() user: User,
-  ): Promise<WebResponse<boolean>> {
+  async logout(@Auth() user: User): Promise<WebResponse<boolean>> {
     const result = await this.userService.logout(user);
 
     return {

@@ -2,11 +2,16 @@ import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { PrismaService } from '../common/prisma.service';
 import { ValidationService } from '../common/validation.service';
-import { LoginUserRequest, RegisterUserRequest, UpdateUserRequest, UserResponse } from '../model/user.model';
+import {
+  LoginUserRequest,
+  RegisterUserRequest,
+  UpdateUserRequest,
+  UserResponse,
+} from '../model/user.model';
 import { Logger } from 'winston';
 import { UserValidation } from './user.validation';
 import * as bcrypt from 'bcrypt';
-import { v4 as uuid } from "uuid";
+import { v4 as uuid } from 'uuid';
 import { User } from '@prisma/client';
 
 @Injectable()
@@ -15,7 +20,7 @@ export class UserService {
     private validationService: ValidationService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private prismaService: PrismaService,
-  ) { }
+  ) {}
 
   async register(request: RegisterUserRequest): Promise<UserResponse> {
     const registerRequest: RegisterUserRequest =
@@ -41,14 +46,16 @@ export class UserService {
     };
   }
 
-
   identificationFailed() {
     throw new HttpException(`Username or password is invalid`, 401);
   }
 
   async login(request: LoginUserRequest): Promise<UserResponse> {
     this.logger.debug(`UserService.login(${JSON.stringify(request)})`);
-    const loginRequest: LoginUserRequest = this.validationService.validate(UserValidation.LOGIN, request);
+    const loginRequest: LoginUserRequest = this.validationService.validate(
+      UserValidation.LOGIN,
+      request,
+    );
 
     let user = await this.prismaService.user.findUnique({
       where: {
@@ -56,12 +63,14 @@ export class UserService {
       },
     });
 
-
     if (!user) {
       this.identificationFailed();
     }
 
-    const isPasswordValid = await bcrypt.compare(loginRequest.password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      loginRequest.password,
+      user.password,
+    );
 
     if (!isPasswordValid) {
       this.identificationFailed();
@@ -69,30 +78,33 @@ export class UserService {
 
     user = await this.prismaService.user.update({
       where: {
-        username: loginRequest.username
+        username: loginRequest.username,
       },
       data: {
         token: uuid(),
-      }
+      },
     });
 
     return {
       id: user.id,
       username: user.username,
-      token: user.token
-    }
+      token: user.token,
+    };
   }
 
   async get(user: User): Promise<UserResponse> {
     return {
       id: user.id,
       username: user.username,
-    }
+    };
   }
 
   async update(user: User, request: UpdateUserRequest): Promise<UserResponse> {
     this.logger.debug(`UserService.update(${user.id}, ${request.username})`);
-    const updateRequest: UpdateUserRequest = this.validationService.validate(UserValidation.UPDATE, request);
+    const updateRequest: UpdateUserRequest = this.validationService.validate(
+      UserValidation.UPDATE,
+      request,
+    );
 
     if (updateRequest.username) {
       user.username = updateRequest.username;
@@ -106,25 +118,25 @@ export class UserService {
       where: { id: user.id },
       data: {
         username: user.username,
-        password: user.password
+        password: user.password,
       },
     });
 
     return {
       id: result.id,
       username: result.username,
-    }
+    };
   }
 
   async logout(user: User): Promise<UserResponse> {
     const result = await this.prismaService.user.update({
       where: { id: user.id },
-      data: { token: null }
+      data: { token: null },
     });
 
     return {
       id: result.id,
       username: result.username,
-    }
+    };
   }
 }

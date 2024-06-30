@@ -144,7 +144,7 @@ describe('USER Controller', () => {
         .put(`/api/v1/users/current`)
         .set('Authorization', 'test')
         .send({
-          password: 'test updated'
+          password: 'test updated',
         });
       logger.info(response.body);
 

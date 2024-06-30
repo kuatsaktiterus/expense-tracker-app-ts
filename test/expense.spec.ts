@@ -27,8 +27,6 @@ describe('Expense Controller', () => {
 
   describe('POST /api/v1/expenses', () => {
     beforeEach(async () => {
-      await testService.deleteExpense();
-      await testService.deleteUser();
       await testService.createUser();
     });
 
@@ -60,15 +58,82 @@ describe('Expense Controller', () => {
         });
       logger.info(response.body);
 
-      const dateOfExpense = new Date(response.body.data.date_of_expense).toString();
+      const dateOfExpense = new Date(
+        response.body.data.date_of_expense,
+      ).toString();
 
       expect(response.status).toBe(200);
       expect(response.body.data.expense).toBe(300000);
       expect(response.body.data.expense_name).toBe('uang jajan minggu ini');
-      expect(dateOfExpense).toBe(`${time}`)
+      expect(dateOfExpense).toBe(`${time}`);
       expect(response.body.data.id_user).toBe(user.id);
     });
-
   });
 
+  describe('GET /api/v1/expenses', () => {
+    beforeEach(async () => {
+      await testService.createUser();
+      await testService.createExpense();
+    });
+
+    it('should be rejected if unauthorized', async () => {
+      const response = await request(app.getHttpServer()).get(
+        '/api/v1/expenses',
+      );
+      logger.info(response.body);
+
+      expect(response.status).toBe(401);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to list expense', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/expenses')
+        .set('Authorization', 'test')
+        .send({
+          page: 2,
+          size: 1,
+        });
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.length).toBe(0);
+      expect(response.body.paging.current_page).toBe(2);
+      expect(response.body.paging.total_page).toBe(1);
+      expect(response.body.paging.size).toBe(1);
+    });
+  });
+
+  describe('GET /api/v1/expenses/:id', () => {
+    beforeEach(async () => {
+      await testService.createUser();
+      await testService.createExpense();
+    });
+
+    it('should be rejected if unauthorized', async () => {
+      const expense = await testService.getExpense();
+      const response = await request(app.getHttpServer()).get(
+        `/api/v1/expenses/${expense.id}`,
+      );
+      logger.info(response.body);
+
+      expect(response.status).toBe(401);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to list expense', async () => {
+      const expense = await testService.getExpense();
+      const user = await testService.getUser();
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/expenses/${expense.id}`)
+        .set('Authorization', 'test');
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.expense).toBe(3000000);
+      expect(response.body.data.expense_name).toBe('test expense');
+      expect(response.body.data.date_of_expense).toBe(new Date('2024-01-01').toISOString());
+      expect(response.body.data.id_user).toBe(user.id);
+    });
+  });
 });

@@ -5,9 +5,10 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-
-  constructor(private prismaService: PrismaService,
-    @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger) { }
+  constructor(
+    private prismaService: PrismaService,
+    @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
+  ) {}
   async use(req: any, res: any, next: (error?: Error | any) => void) {
     const token = req.headers['authorization'] as string;
     this.logger.debug(`Token ${token}`);
