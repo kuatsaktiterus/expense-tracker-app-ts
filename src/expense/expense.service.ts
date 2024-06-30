@@ -101,6 +101,15 @@ export class ExpenseService {
     });
   }
 
+  async checkExpenseMustValid(
+    userId: string,
+    expenseId: string,
+  ): Promise<Expense> {
+    return await this.prismaService.expense.findUnique({
+      where: { id: expenseId, user: { id: userId } },
+    });
+  }
+
   async update(
     user: User,
     request: updateExpenseRequest,
@@ -111,9 +120,7 @@ export class ExpenseService {
       request,
     );
 
-    let expense = await this.prismaService.expense.findUnique({
-      where: { id: updateRequest.id, user: { id: user.id } },
-    });
+    let expense = await this.checkExpenseMustValid(user.id, updateRequest.id);
 
     if (!expense) {
       throw new HttpException('Unauthorized', 401);
@@ -129,5 +136,16 @@ export class ExpenseService {
     });
 
     return expense;
+  }
+
+  async remove(user: User, id: string) {
+    const expense = await this.checkExpenseMustValid(user.id, id);
+
+    if (!expense) throw new HttpException('Unauthorized', 401);
+
+    await this.prismaService.expense.delete({
+      where: { id: id },
+    });
+    return;
   }
 }

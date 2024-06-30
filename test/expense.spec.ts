@@ -160,7 +160,7 @@ describe('Expense Controller', () => {
       expect(response.body.errors).toBeDefined();
     });
 
-    it('should be able to list expense', async () => {
+    it('should be able to update expense', async () => {
       const expense = await testService.getExpense();
       const user = await testService.getUser();
       const response = await request(app.getHttpServer())
@@ -183,6 +183,7 @@ describe('Expense Controller', () => {
     });
 
     it('should be rejected if expense id is invalid', async () => {
+      const expense = await testService.getExpense();
       const response = await request(app.getHttpServer())
         .put(`/api/v1/expenses/6680c4bf717c7f143a914d82`)
         .set('Authorization', 'test')
@@ -195,6 +196,34 @@ describe('Expense Controller', () => {
 
       expect(response.status).toBe(401);
       expect(response.body.errors).toBeDefined();
+    });
+  });
+
+  describe('DELETE /api/v1/expenses/:id', () => {
+    beforeEach(async () => {
+      await testService.createUser();
+      await testService.createExpense();
+    });
+
+    it('should be invalid', async () => {
+      const response = await request(app.getHttpServer())
+        .delete(`/api/v1/expenses/6680c4bf717c7f143a914d82`)
+        .set('Authorization', 'test');
+      logger.info(response.body);
+
+      expect(response.status).toBe(401);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to delete expense', async () => {
+      const expense = await testService.getExpense();
+      const response = await request(app.getHttpServer())
+        .delete(`/api/v1/expenses/${expense.id}`)
+        .set('Authorization', 'test');
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toBe(true);
     });
   });
 });
