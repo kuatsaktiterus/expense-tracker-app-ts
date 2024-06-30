@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ExpenseService } from './expense.service';
 import { Auth } from '../common/auth.decorator';
 import { User } from '@prisma/client';
@@ -6,12 +14,13 @@ import {
   ExpenseResponse,
   InsertExpenseRequest,
   ListExpenseRequest,
+  updateExpenseRequest,
 } from '../model/expense.model';
 import { WebResponse } from '../model/web.model';
 
 @Controller('/api/v1/expenses')
 export class ExpenseController {
-  constructor(private expenseService: ExpenseService) { }
+  constructor(private expenseService: ExpenseService) {}
 
   @Post()
   @HttpCode(200)
@@ -46,6 +55,21 @@ export class ExpenseController {
     @Param('id') id: string,
   ): Promise<WebResponse<ExpenseResponse>> {
     const result = await this.expenseService.get(user, id);
+
+    return {
+      data: result,
+    };
+  }
+
+  @Put('/:id')
+  @HttpCode(200)
+  async update(
+    @Auth() user: User,
+    @Param('id') id: string,
+    @Body() request: updateExpenseRequest,
+  ): Promise<WebResponse<ExpenseResponse>> {
+    request.id = id;
+    const result = await this.expenseService.update(user, request);
 
     return {
       data: result,

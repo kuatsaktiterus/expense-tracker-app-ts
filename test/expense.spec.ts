@@ -132,7 +132,53 @@ describe('Expense Controller', () => {
       expect(response.status).toBe(200);
       expect(response.body.data.expense).toBe(3000000);
       expect(response.body.data.expense_name).toBe('test expense');
-      expect(response.body.data.date_of_expense).toBe(new Date('2024-01-01').toISOString());
+      expect(response.body.data.date_of_expense).toBe(
+        new Date('2024-01-01').toISOString(),
+      );
+      expect(response.body.data.id_user).toBe(user.id);
+    });
+  });
+
+  describe('PUT /api/v1/expenses/:id', () => {
+    beforeEach(async () => {
+      await testService.createUser();
+      await testService.createExpense();
+    });
+
+    it('should be rejected if unauthorized', async () => {
+      const expense = await testService.getExpense();
+      const response = await request(app.getHttpServer())
+        .put(`/api/v1/expenses/${expense.id}`)
+        .send({
+          expense: 100,
+          expense_name: 'test update expense',
+          date_of_expense: new Date('2024-01-02'),
+        });
+      logger.info(response.body);
+
+      expect(response.status).toBe(401);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to list expense', async () => {
+      const expense = await testService.getExpense();
+      const user = await testService.getUser();
+      const response = await request(app.getHttpServer())
+        .put(`/api/v1/expenses/${expense.id}`)
+        .set('Authorization', 'test')
+        .send({
+          expense: 100,
+          expense_name: 'test update expense',
+          date_of_expense: new Date('2024-01-02'),
+        });
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.expense).toBe(100);
+      expect(response.body.data.expense_name).toBe('test update expense');
+      expect(response.body.data.date_of_expense).toBe(
+        new Date('2024-01-02').toISOString(),
+      );
       expect(response.body.data.id_user).toBe(user.id);
     });
   });

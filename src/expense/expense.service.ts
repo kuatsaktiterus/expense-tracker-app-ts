@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/prisma.service';
 import { ValidationService } from '../common/validation.service';
 import { Expense, User } from '@prisma/client';
@@ -6,11 +6,13 @@ import {
   ExpenseResponse,
   InsertExpenseRequest,
   ListExpenseRequest,
+  updateExpenseRequest,
 } from '../model/expense.model';
 import { expenseValidation } from './expense.validation';
 import { WebResponse } from '../model/web.model';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { throws } from 'assert';
 
 @Injectable()
 export class ExpenseService {
@@ -18,13 +20,13 @@ export class ExpenseService {
     private prismaService: PrismaService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private validationServide: ValidationService,
-  ) { }
+  ) {}
 
   async insert(
     user: User,
     request: InsertExpenseRequest,
   ): Promise<ExpenseResponse> {
-    const insertExpense = this.validationServide.validate(
+    const insertExpense: InsertExpenseRequest = this.validationServide.validate(
       expenseValidation.INSERT,
       request,
     );
@@ -45,10 +47,12 @@ export class ExpenseService {
     };
   }
 
-  async list(user: User, request: ListExpenseRequest,
+  async list(
+    user: User,
+    request: ListExpenseRequest,
   ): Promise<WebResponse<ExpenseResponse[]>> {
     this.logger.debug(`expenseService.list(${request.size} ${request.page})`);
-    const listRequest = this.validationServide.validate(
+    const listRequest: ListExpenseRequest = this.validationServide.validate(
       expenseValidation.LIST,
       request,
     );
@@ -92,8 +96,38 @@ export class ExpenseService {
         id: idExpense,
         user: {
           id: user.id,
-        }
+        },
       },
     });
+  }
+
+  async update(
+    user: User,
+    request: updateExpenseRequest,
+  ): Promise<ExpenseResponse> {
+    this.logger.debug(`expenseService.update(request ${request.id})`);
+    const updateRequest: updateExpenseRequest = this.validationServide.validate(
+      expenseValidation.UPDATE,
+      request,
+    );
+
+    let expense = await this.prismaService.expense.findUnique({
+      where: { id: updateRequest.id, user: { id: user.id } },
+    });
+
+    if (!expense) {
+      throw new HttpException('Unauthorized', 401);
+    }
+
+    expense = await this.prismaService.expense.update({
+      where: { id: expense.id },
+      data: {
+        expense: updateRequest.expense,
+        expense_name: updateRequest.expense_name,
+        date_of_expense: updateRequest.date_of_expense,
+      },
+    });
+
+    return expense;
   }
 }

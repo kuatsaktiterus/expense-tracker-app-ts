@@ -17,3 +17,10 @@ export class ListExpenseRequest {
   page: number;
   size: number;
 }
+
+export class updateExpenseRequest {
+  id: string;
+  expense: number;
+  expense_name: string;
+  date_of_expense: Date;
+}
