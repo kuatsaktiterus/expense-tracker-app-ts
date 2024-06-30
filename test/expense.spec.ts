@@ -181,5 +181,20 @@ describe('Expense Controller', () => {
       );
       expect(response.body.data.id_user).toBe(user.id);
     });
+
+    it('should be rejected if expense id is invalid', async () => {
+      const response = await request(app.getHttpServer())
+        .put(`/api/v1/expenses/6680c4bf717c7f143a914d82`)
+        .set('Authorization', 'test')
+        .send({
+          expense: 100,
+          expense_name: 'test update expense',
+          date_of_expense: new Date('2024-01-02'),
+        });
+      logger.info(response.body);
+
+      expect(response.status).toBe(401);
+      expect(response.body.errors).toBeDefined();
+    });
   });
 });

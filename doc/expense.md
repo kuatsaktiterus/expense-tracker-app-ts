@@ -157,7 +157,7 @@ Response Body (failed):
 
 ## DELETE EXPENSE
 
-Endpoint: DELETE /api/v1/expense/:id
+Endpoint: DELETE /api/v1/expenses/:id
 
 Headers:
 
