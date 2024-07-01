@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../src/common/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { Expense, User } from '@prisma/client';
-import { get } from 'http';
 
 @Injectable()
 export class TestService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
 
   async deleteAll() {
+    await this.deleteIncome();
     await this.deleteExpense();
     await this.deleteUser();
   }
@@ -59,5 +59,9 @@ export class TestService {
     return await this.prismaService.expense.findFirst({
       where: { expense_name: 'test expense' },
     });
+  }
+
+  async deleteIncome() {
+    await this.prismaService.income.deleteMany();
   }
 }

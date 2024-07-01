@@ -8,11 +8,10 @@ import {
   ListExpenseRequest,
   updateExpenseRequest,
 } from '../model/expense.model';
-import { expenseValidation } from './expense.validation';
+import { ExpenseValidation } from './expense.validation';
 import { WebResponse } from '../model/web.model';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { throws } from 'assert';
 
 @Injectable()
 export class ExpenseService {
@@ -20,14 +19,14 @@ export class ExpenseService {
     private prismaService: PrismaService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private validationServide: ValidationService,
-  ) {}
+  ) { }
 
   async insert(
     user: User,
     request: InsertExpenseRequest,
   ): Promise<ExpenseResponse> {
     const insertExpense: InsertExpenseRequest = this.validationServide.validate(
-      expenseValidation.INSERT,
+      ExpenseValidation.INSERT,
       request,
     );
 
@@ -53,7 +52,7 @@ export class ExpenseService {
   ): Promise<WebResponse<ExpenseResponse[]>> {
     this.logger.debug(`expenseService.list(${request.size} ${request.page})`);
     const listRequest: ListExpenseRequest = this.validationServide.validate(
-      expenseValidation.LIST,
+      ExpenseValidation.LIST,
       request,
     );
 
@@ -116,7 +115,7 @@ export class ExpenseService {
   ): Promise<ExpenseResponse> {
     this.logger.debug(`expenseService.update(request ${request.id})`);
     const updateRequest: updateExpenseRequest = this.validationServide.validate(
-      expenseValidation.UPDATE,
+      ExpenseValidation.UPDATE,
       request,
     );
 

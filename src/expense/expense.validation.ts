@@ -1,6 +1,6 @@
-import { string, z, ZodType } from 'zod';
+import { z, ZodType } from 'zod';
 
-export class expenseValidation {
+export class ExpenseValidation {
   static readonly INSERT: ZodType = z.object({
     expense: z.number().positive(),
     expense_name: z.string().min(1).max(255),

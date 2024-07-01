@@ -13,7 +13,7 @@ Request Body:
 ```json
 {
   "income": 3000000,
-  "incomes_name": "rahasia",
+  "income_name": "rahasia",
   "date_of_income": 27-06-2024
 }
 ```
@@ -24,7 +24,7 @@ Response Body (success):
 {
   "id": 1,
   "income": "ricky",
-  "incomes_name": "rahasia",
+  "income_name": "rahasia",
   "date_of_income": 27-06-2024
 }
 ```
