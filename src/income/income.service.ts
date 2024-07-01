@@ -7,7 +7,7 @@ import {
   ListIncomeRequest,
 } from '../model/income.model';
 import { IncomeValidation } from './income.validation';
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { WebResponse } from '../model/web.model';
@@ -86,5 +86,20 @@ export class IncomeService {
       date_of_income: income.date_of_income,
       id_user: income.id_user,
     };
+  }
+
+  async checkIncomeMustExist(user: User, id: string): Promise<Income> {
+    const income = await this.prismaService.income.findUnique({
+      where: { id: id, id_user: user.id },
+    });
+
+    if (!income) throw new HttpException('unauthorized', 401);
+
+    return income;
+  }
+
+  async get(user: User, id: string): Promise<IncomeResponse> {
+    let income = await this.checkIncomeMustExist(user, id);
+    return income;
   }
 }

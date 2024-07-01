@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../src/common/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { Expense, User } from '@prisma/client';
+import { Expense, Income, User } from '@prisma/client';
 
 @Injectable()
 export class TestService {
@@ -74,6 +74,12 @@ export class TestService {
         date_of_income: new Date('2024-01-01'),
         id_user: user.id,
       },
+    });
+  }
+
+  async getIncome(): Promise<Income> {
+    return await this.prismaService.income.findFirst({
+      where: { income_name: 'test income' },
     });
   }
 }

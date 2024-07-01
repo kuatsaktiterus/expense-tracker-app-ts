@@ -144,4 +144,39 @@ describe('Income Controller', () => {
       expect(response.body.paging.size).toBe(10);
     });
   });
+
+  describe('GET /api/v1/incomes/:id', () => {
+    beforeEach(async () => {
+      await testService.createUser();
+      await testService.createIncome();
+    });
+
+    it('should be rejected if unautihorized', async () => {
+      const income = await testService.getIncome();
+      const response = await request(app.getHttpServer()).get(
+        `/api/v1/incomes/${income.id}`,
+      );
+      logger.info(response.body);
+
+      expect(response.status).toBe(401);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to get income', async () => {
+      const income = await testService.getIncome();
+      const user = await testService.getUser();
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/incomes/${income.id}`)
+        .set('Authorization', 'test');
+      logger.info(response.body);
+
+      const time = new Date('2024-01-01');
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.income).toBe(3000000);
+      expect(response.body.data.income_name).toBe('test income');
+      expect(response.body.data.date_of_income).toBe(time.toISOString());
+      expect(response.body.data.id_user).toBe(user.id);
+    });
+  });
 });
