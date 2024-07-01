@@ -7,13 +7,14 @@ import { IncomeService } from './income.service';
 
 @Controller('/api/v1/incomes')
 export class IncomeController {
-  constructor(
-    private incomeService: IncomeService
-  ) { }
+  constructor(private incomeService: IncomeService) {}
 
   @Post()
   @HttpCode(200)
-  async post(@Auth() user: User, @Body() request: InsertIncomeRequest): Promise<WebResponse<IncomeResponse>> {
+  async post(
+    @Auth() user: User,
+    @Body() request: InsertIncomeRequest,
+  ): Promise<WebResponse<IncomeResponse>> {
     const result = await this.incomeService.insert(user, request);
 
     return {

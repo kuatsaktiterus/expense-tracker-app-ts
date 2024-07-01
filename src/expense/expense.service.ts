@@ -19,7 +19,7 @@ export class ExpenseService {
     private prismaService: PrismaService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private validationServide: ValidationService,
-  ) { }
+  ) {}
 
   async insert(
     user: User,

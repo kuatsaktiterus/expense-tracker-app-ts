@@ -12,14 +12,16 @@ export class IncomeService {
   constructor(
     private prismaService: PrismaService,
     private validationService: ValidationService,
-    @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger
-  ) { }
+    @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
+  ) {}
 
   async insert(
     user: User,
     request: InsertIncomeRequest,
   ): Promise<IncomeResponse> {
-    this.logger.debug(`incomeService.insert(${request.income}, ${request.income_name}, ${request.date_of_income})`);
+    this.logger.debug(
+      `incomeService.insert(${request.income}, ${request.income_name}, ${request.date_of_income})`,
+    );
     const incomeRequest: InsertIncomeRequest = this.validationService.validate(
       IncomeValidation.INSERT,
       request,

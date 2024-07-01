@@ -58,7 +58,6 @@ describe('Income Controller', () => {
         });
       logger.info(response.body);
 
-
       expect(response.status).toBe(200);
       expect(response.body.data.income).toBe(300000);
       expect(response.body.data.income_name).toBe('test income');

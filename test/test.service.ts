@@ -5,7 +5,7 @@ import { Expense, User } from '@prisma/client';
 
 @Injectable()
 export class TestService {
-  constructor(private prismaService: PrismaService) { }
+  constructor(private prismaService: PrismaService) {}
 
   async deleteAll() {
     await this.deleteIncome();
