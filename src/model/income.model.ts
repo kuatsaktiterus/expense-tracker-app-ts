@@ -16,3 +16,10 @@ export class ListIncomeRequest {
   page: number;
   size: number;
 }
+
+export class UpdateIncomeRequest {
+  id: string;
+  income: number;
+  income_name: string;
+  date_of_income: Date;
+}

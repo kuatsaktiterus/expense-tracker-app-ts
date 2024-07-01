@@ -179,4 +179,48 @@ describe('Income Controller', () => {
       expect(response.body.data.id_user).toBe(user.id);
     });
   });
+
+  describe('PUT /api/v1/incomes/:id', () => {
+    beforeEach(async () => {
+      await testService.createUser();
+      await testService.createIncome();
+    });
+
+    it('should be rejected if request is invalid', async () => {
+      const income = await testService.getIncome();
+      const response = await request(app.getHttpServer())
+        .put(`/api/v1/incomes/${income.id}`)
+        .set('Authorization', 'test')
+        .send({
+          income: '',
+          income_name: '',
+          date_of_income: '',
+        });
+      logger.info(response.body);
+
+      expect(response.status).toBe(400);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to update income ', async () => {
+      const income = await testService.getIncome();
+      const user = await testService.getUser();
+      const time = new Date('2024-01-02');
+      const response = await request(app.getHttpServer())
+        .put(`/api/v1/incomes/${income.id}`)
+        .set('Authorization', 'test')
+        .send({
+          income: 100000,
+          income_name: 'test income updated',
+          date_of_income: time,
+        });
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.income).toBe(100000);
+      expect(response.body.data.income_name).toBe('test income updated');
+      expect(response.body.data.date_of_income).toBe(time.toISOString());
+      expect(response.body.data.id_user).toBe(user.id);
+    });
+  });
 });

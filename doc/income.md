@@ -135,8 +135,9 @@ Response Body (success):
   "data": {
     "id": 1,
     "expense": 3000000,
-    "incomes_name": "THR jilid 2", // optional
-    "date_of_expense": 24-06-2024
+    "incomes_name": "THR jilid 2",
+    "date_of_expense": 24-06-2024,
+    "id_user": 1
   }
 }
 ```

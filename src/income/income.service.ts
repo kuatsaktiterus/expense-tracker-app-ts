@@ -5,6 +5,7 @@ import {
   IncomeResponse,
   InsertIncomeRequest,
   ListIncomeRequest,
+  UpdateIncomeRequest,
 } from '../model/income.model';
 import { IncomeValidation } from './income.validation';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
@@ -101,5 +102,37 @@ export class IncomeService {
   async get(user: User, id: string): Promise<IncomeResponse> {
     let income = await this.checkIncomeMustExist(user, id);
     return income;
+  }
+
+  async update(
+    user: User,
+    request: UpdateIncomeRequest,
+  ): Promise<IncomeResponse> {
+    const incomeRequest: UpdateIncomeRequest = this.validationService.validate(
+      IncomeValidation.UPDATE,
+      request,
+    );
+
+    let income = await this.checkIncomeMustExist(user, incomeRequest.id);
+
+    income = await this.prismaService.income.update({
+      where: {
+        id: request.id,
+        id_user: user.id,
+      },
+      data: {
+        income: incomeRequest.income,
+        income_name: incomeRequest.income_name,
+        date_of_income: incomeRequest.date_of_income,
+      },
+    });
+
+    return {
+      id: income.id,
+      income: income.income,
+      income_name: income.income_name,
+      date_of_income: income.date_of_income,
+      id_user: income.id_user,
+    };
   }
 }

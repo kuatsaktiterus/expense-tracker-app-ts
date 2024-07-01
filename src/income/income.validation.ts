@@ -11,4 +11,11 @@ export class IncomeValidation {
     page: z.number().positive(),
     size: z.number().positive(),
   });
+
+  static readonly UPDATE: ZodType = z.object({
+    id: z.string(),
+    income: z.number().positive(),
+    income_name: z.string().min(1).max(255),
+    date_of_income: z.coerce.date(),
+  });
 }

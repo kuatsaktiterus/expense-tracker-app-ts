@@ -1,10 +1,19 @@
-import { Body, Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { User } from '@prisma/client';
 import { Auth } from '../common/auth.decorator';
 import {
   IncomeResponse,
   InsertIncomeRequest,
   ListIncomeRequest,
+  UpdateIncomeRequest,
 } from '../model/income.model';
 import { WebResponse } from '../model/web.model';
 import { IncomeService } from './income.service';
@@ -47,6 +56,21 @@ export class IncomeController {
     @Param('id') id: string,
   ): Promise<WebResponse<IncomeResponse>> {
     const result = await this.incomeService.get(user, id);
+
+    return {
+      data: result,
+    };
+  }
+
+  @Put('/:id')
+  @HttpCode(200)
+  async update(
+    @Auth() user: User,
+    @Body() request: UpdateIncomeRequest,
+    @Param('id') id: string,
+  ): Promise<WebResponse<IncomeResponse>> {
+    request.id = id;
+    const result = await this.incomeService.update(user, request);
 
     return {
       data: result,
