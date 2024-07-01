@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -74,6 +75,19 @@ export class IncomeController {
 
     return {
       data: result,
+    };
+  }
+
+  @Delete('/:id')
+  @HttpCode(200)
+  async remove(
+    @Auth() user: User,
+    @Param('id') id: string,
+  ): Promise<WebResponse<boolean>> {
+    await this.incomeService.remove(user, id);
+
+    return {
+      data: true,
     };
   }
 }

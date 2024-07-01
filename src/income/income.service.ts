@@ -135,4 +135,14 @@ export class IncomeService {
       id_user: income.id_user,
     };
   }
+
+  async remove(user: User, id: string) {
+    await this.checkIncomeMustExist(user, id);
+
+    this.prismaService.income.delete({
+      where: { id: id },
+    });
+
+    return;
+  }
 }

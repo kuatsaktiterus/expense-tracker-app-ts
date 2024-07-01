@@ -223,4 +223,33 @@ describe('Income Controller', () => {
       expect(response.body.data.id_user).toBe(user.id);
     });
   });
+
+  describe('DELETE /api/v1/incomes/:id', () => {
+    beforeEach(async () => {
+      await testService.createUser();
+      await testService.createIncome();
+    });
+
+    it('should be rejected if unautihorized', async () => {
+      const income = await testService.getIncome();
+      const response = await request(app.getHttpServer()).delete(
+        `/api/v1/incomes/${income.id}`,
+      );
+      logger.info(response.body);
+
+      expect(response.status).toBe(401);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to delete income', async () => {
+      const income = await testService.getIncome();
+      const response = await request(app.getHttpServer())
+        .delete(`/api/v1/incomes/${income.id}`)
+        .set('Authorization', 'test');
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toBe(true);
+    });
+  });
 });
