@@ -65,4 +65,83 @@ describe('Income Controller', () => {
       expect(response.body.data.id_user).toBe(user.id);
     });
   });
+
+  describe('GET /api/v1/incomes', () => {
+    beforeEach(async () => {
+      await testService.createUser();
+      await testService.createIncome();
+    });
+
+    it('should be rejected if unautihorized', async () => {
+      const response = await request(app.getHttpServer()).get(
+        '/api/v1/incomes',
+      );
+      logger.info(response.body);
+
+      expect(response.status).toBe(401);
+      expect(response.body.errors).toBeDefined();
+    });
+
+    it('should be able to list income if size not include', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/incomes')
+        .set('Authorization', 'test')
+        .send({
+          page: 1,
+        });
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.length).toBe(1);
+      expect(response.body.paging.current_page).toBe(1);
+      expect(response.body.paging.total_page).toBe(1);
+      expect(response.body.paging.size).toBe(10);
+    });
+
+    it('should be able to list income if page not include', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/incomes')
+        .set('Authorization', 'test')
+        .send({
+          size: 1,
+        });
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.length).toBe(1);
+      expect(response.body.paging.current_page).toBe(1);
+      expect(response.body.paging.total_page).toBe(1);
+      expect(response.body.paging.size).toBe(1);
+    });
+
+    it('should be able to list income if both page and size include', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/incomes')
+        .set('Authorization', 'test')
+        .send({
+          page: 1,
+          size: 10,
+        });
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.length).toBe(1);
+      expect(response.body.paging.current_page).toBe(1);
+      expect(response.body.paging.total_page).toBe(1);
+      expect(response.body.paging.size).toBe(10);
+    });
+
+    it('should be able to list income if both page and size not include', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/incomes')
+        .set('Authorization', 'test');
+      logger.info(response.body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.length).toBe(1);
+      expect(response.body.paging.current_page).toBe(1);
+      expect(response.body.paging.total_page).toBe(1);
+      expect(response.body.paging.size).toBe(10);
+    });
+  });
 });

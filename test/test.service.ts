@@ -64,4 +64,16 @@ export class TestService {
   async deleteIncome() {
     await this.prismaService.income.deleteMany();
   }
+
+  async createIncome() {
+    const user = await this.getUser();
+    await this.prismaService.income.create({
+      data: {
+        income: 3000000,
+        income_name: 'test income',
+        date_of_income: new Date('2024-01-01'),
+        id_user: user.id,
+      },
+    });
+  }
 }

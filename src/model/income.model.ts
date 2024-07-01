@@ -11,3 +11,8 @@ export class InsertIncomeRequest {
   income_name: string;
   date_of_income: Date;
 }
+
+export class ListIncomeRequest {
+  page: number;
+  size: number;
+}
