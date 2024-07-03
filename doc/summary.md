@@ -16,8 +16,9 @@ Response Body (success):
     "id": 1,
     "incomes_total": 3000000,
     "expenses_total": "THR",
-    "expenses_total": "THR",
-    "expenses_total": "THR"
+    "incomes_count": "THR",
+    "expenses_count": "THR",
+    "id_user": "1"
   }
 }
 ```

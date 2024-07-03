@@ -12,6 +12,7 @@ import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { WebResponse } from '../model/web.model';
+import { SummaryCalc } from '../common/summary.calc';
 
 @Injectable()
 export class IncomeService {
@@ -19,6 +20,7 @@ export class IncomeService {
     private prismaService: PrismaService,
     private validationService: ValidationService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
+    private summaryCalc: SummaryCalc,
   ) {}
 
   async insert(
@@ -39,6 +41,8 @@ export class IncomeService {
         ...{ id_user: user.id },
       },
     });
+
+    await this.summaryCalc.calculateCreatedIncomesTotal(income);
 
     return {
       id: income.id,
@@ -113,9 +117,9 @@ export class IncomeService {
       request,
     );
 
-    let income = await this.checkIncomeMustExist(user, incomeRequest.id);
+    const oldIncome = await this.checkIncomeMustExist(user, incomeRequest.id);
 
-    income = await this.prismaService.income.update({
+    const newIncome = await this.prismaService.income.update({
       where: {
         id: request.id,
         id_user: user.id,
@@ -127,21 +131,28 @@ export class IncomeService {
       },
     });
 
+    await this.summaryCalc.calculateUpdatedIncomesTotal(
+      oldIncome,
+      newIncome.income,
+    );
+
     return {
-      id: income.id,
-      income: income.income,
-      income_name: income.income_name,
-      date_of_income: income.date_of_income,
-      id_user: income.id_user,
+      id: newIncome.id,
+      income: newIncome.income,
+      income_name: newIncome.income_name,
+      date_of_income: newIncome.date_of_income,
+      id_user: newIncome.id_user,
     };
   }
 
   async remove(user: User, id: string) {
     await this.checkIncomeMustExist(user, id);
 
-    this.prismaService.income.delete({
+    const income = await this.prismaService.income.delete({
       where: { id: id },
     });
+
+    await this.summaryCalc.calculateDeletedIncomesTotal(income);
 
     return;
   }

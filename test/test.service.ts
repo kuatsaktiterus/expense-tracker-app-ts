@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../src/common/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { Expense, Income, User } from '@prisma/client';
+import { Expense, Income, Summary, User } from '@prisma/client';
 
 @Injectable()
 export class TestService {
@@ -10,6 +10,7 @@ export class TestService {
   async deleteAll() {
     await this.deleteIncome();
     await this.deleteExpense();
+    await this.deleteSummary();
     await this.deleteUser();
   }
 
@@ -65,11 +66,11 @@ export class TestService {
     await this.prismaService.income.deleteMany();
   }
 
-  async createIncome() {
+  async createIncome(income?: number) {
     const user = await this.getUser();
     await this.prismaService.income.create({
       data: {
-        income: 3000000,
+        income: income || 3000000,
         income_name: 'test income',
         date_of_income: new Date('2024-01-01'),
         id_user: user.id,
@@ -80,6 +81,30 @@ export class TestService {
   async getIncome(): Promise<Income> {
     return await this.prismaService.income.findFirst({
       where: { income_name: 'test income' },
+    });
+  }
+
+  async deleteSummary() {
+    await this.prismaService.summary.deleteMany();
+  }
+
+  async createSummary() {
+    const user = await this.getUser();
+    await this.prismaService.summary.create({
+      data: {
+        incomes_total: 10000000,
+        incomes_count: 10,
+        expenses_total: 2000000,
+        expenses_count: 30,
+        id_user: user.id,
+      },
+    });
+  }
+
+  async getSummary(): Promise<Summary> {
+    const user = await this.getUser();
+    return await this.prismaService.summary.findFirst({
+      where: { id_user: user.id },
     });
   }
 }

@@ -7,6 +7,7 @@ import { ValidationService } from './validation.service';
 import { APP_FILTER } from '@nestjs/core';
 import { ErrorFilter } from './error.filter';
 import { AuthMiddleware } from './auth.middleware';
+import { SummaryCalc } from './summary.calc';
 
 @Global()
 @Module({
@@ -26,8 +27,9 @@ import { AuthMiddleware } from './auth.middleware';
       provide: APP_FILTER,
       useClass: ErrorFilter,
     },
+    SummaryCalc,
   ],
-  exports: [PrismaService, ValidationService],
+  exports: [PrismaService, ValidationService, SummaryCalc],
 })
 export class CommonModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

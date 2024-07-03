@@ -20,6 +20,7 @@ model User {
   token    String?
   Income   Income[]
   Expense  Expense[]
+  Summary  Summary?
 
   @@map("users")
 }
@@ -50,10 +51,13 @@ model Income {
 
 model Summary {
   id             String @id @default(auto()) @map("_id") @db.ObjectId
-  incomes_total  Int
-  expenses_total Int
-  incomes_count  Int
-  expenses_count Int
+  incomes_total  Int?
+  expenses_total Int?
+  incomes_count  Int?
+  expenses_count Int?
+  id_user        String @unique @db.ObjectId
+
+  user User @relation(fields: [id_user], references: [id])
 
   @@map("summaries")
 }

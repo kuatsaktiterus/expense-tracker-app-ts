@@ -184,6 +184,7 @@ describe('Income Controller', () => {
     beforeEach(async () => {
       await testService.createUser();
       await testService.createIncome();
+      await testService.createSummary();
     });
 
     it('should be rejected if request is invalid', async () => {
@@ -202,7 +203,7 @@ describe('Income Controller', () => {
       expect(response.body.errors).toBeDefined();
     });
 
-    it('should be able to update income ', async () => {
+    it('should be able to update income and summary get lower', async () => {
       const income = await testService.getIncome();
       const user = await testService.getUser();
       const time = new Date('2024-01-02');
@@ -216,8 +217,35 @@ describe('Income Controller', () => {
         });
       logger.info(response.body);
 
+      const summary = await testService.getSummary();
+
       expect(response.status).toBe(200);
       expect(response.body.data.income).toBe(100000);
+      expect(summary.incomes_total).toBe(7100000);
+      expect(response.body.data.income_name).toBe('test income updated');
+      expect(response.body.data.date_of_income).toBe(time.toISOString());
+      expect(response.body.data.id_user).toBe(user.id);
+    });
+
+    it('should be able to update income and summary get higher', async () => {
+      const income = await testService.getIncome();
+      const user = await testService.getUser();
+      const time = new Date('2024-01-02');
+      const response = await request(app.getHttpServer())
+        .put(`/api/v1/incomes/${income.id}`)
+        .set('Authorization', 'test')
+        .send({
+          income: 4000000,
+          income_name: 'test income updated',
+          date_of_income: time,
+        });
+      logger.info(response.body);
+
+      const summary = await testService.getSummary();
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.income).toBe(4000000);
+      expect(summary.incomes_total).toBe(11000000);
       expect(response.body.data.income_name).toBe('test income updated');
       expect(response.body.data.date_of_income).toBe(time.toISOString());
       expect(response.body.data.id_user).toBe(user.id);
@@ -227,7 +255,8 @@ describe('Income Controller', () => {
   describe('DELETE /api/v1/incomes/:id', () => {
     beforeEach(async () => {
       await testService.createUser();
-      await testService.createIncome();
+      await testService.createIncome(400000);
+      await testService.createSummary();
     });
 
     it('should be rejected if unautihorized', async () => {
