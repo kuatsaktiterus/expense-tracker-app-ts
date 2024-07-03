@@ -28,6 +28,7 @@ describe('Expense Controller', () => {
   describe('POST /api/v1/expenses', () => {
     beforeEach(async () => {
       await testService.createUser();
+      await testService.createSummary();
     });
 
     it('should be rejected if request is invalid', async () => {
@@ -62,8 +63,11 @@ describe('Expense Controller', () => {
         response.body.data.date_of_expense,
       ).toString();
 
+      const summary = await testService.getSummary();
+
       expect(response.status).toBe(200);
       expect(response.body.data.expense).toBe(300000);
+      expect(summary.expenses_total).toBe(10300000);
       expect(response.body.data.expense_name).toBe('uang jajan minggu ini');
       expect(dateOfExpense).toBe(`${time}`);
       expect(response.body.data.id_user).toBe(user.id);
@@ -143,6 +147,7 @@ describe('Expense Controller', () => {
     beforeEach(async () => {
       await testService.createUser();
       await testService.createExpense();
+      await testService.createSummary();
     });
 
     it('should be rejected if unauthorized', async () => {
@@ -160,21 +165,49 @@ describe('Expense Controller', () => {
       expect(response.body.errors).toBeDefined();
     });
 
-    it('should be able to update expense', async () => {
+    it('should be able to update expense and summary get lower', async () => {
       const expense = await testService.getExpense();
       const user = await testService.getUser();
       const response = await request(app.getHttpServer())
         .put(`/api/v1/expenses/${expense.id}`)
         .set('Authorization', 'test')
         .send({
-          expense: 100,
+          expense: 100000,
           expense_name: 'test update expense',
           date_of_expense: new Date('2024-01-02'),
         });
       logger.info(response.body);
 
+      const summary = await testService.getSummary();
+
       expect(response.status).toBe(200);
-      expect(response.body.data.expense).toBe(100);
+      expect(response.body.data.expense).toBe(100000);
+      expect(summary.expenses_total).toBe(7100000);
+      expect(response.body.data.expense_name).toBe('test update expense');
+      expect(response.body.data.date_of_expense).toBe(
+        new Date('2024-01-02').toISOString(),
+      );
+      expect(response.body.data.id_user).toBe(user.id);
+    });
+
+    it('should be able to update expense and summary get higher', async () => {
+      const expense = await testService.getExpense();
+      const user = await testService.getUser();
+      const response = await request(app.getHttpServer())
+        .put(`/api/v1/expenses/${expense.id}`)
+        .set('Authorization', 'test')
+        .send({
+          expense: 4000000,
+          expense_name: 'test update expense',
+          date_of_expense: new Date('2024-01-02'),
+        });
+      logger.info(response.body);
+
+      const summary = await testService.getSummary();
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.expense).toBe(4000000);
+      expect(summary.expenses_total).toBe(11000000);
       expect(response.body.data.expense_name).toBe('test update expense');
       expect(response.body.data.date_of_expense).toBe(
         new Date('2024-01-02').toISOString(),
@@ -183,7 +216,6 @@ describe('Expense Controller', () => {
     });
 
     it('should be rejected if expense id is invalid', async () => {
-      const expense = await testService.getExpense();
       const response = await request(app.getHttpServer())
         .put(`/api/v1/expenses/6680c4bf717c7f143a914d82`)
         .set('Authorization', 'test')
@@ -203,6 +235,7 @@ describe('Expense Controller', () => {
     beforeEach(async () => {
       await testService.createUser();
       await testService.createExpense();
+      await testService.createSummary();
     });
 
     it('should be invalid', async () => {
@@ -222,8 +255,11 @@ describe('Expense Controller', () => {
         .set('Authorization', 'test');
       logger.info(response.body);
 
+      const summary = await testService.getSummary();
+
       expect(response.status).toBe(200);
       expect(response.body.data).toBe(true);
+      expect(summary.expenses_total).toBe(7000000);
     });
   });
 });

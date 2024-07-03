@@ -94,7 +94,7 @@ export class TestService {
       data: {
         incomes_total: 10000000,
         incomes_count: 10,
-        expenses_total: 2000000,
+        expenses_total: 10000000,
         expenses_count: 30,
         id_user: user.id,
       },

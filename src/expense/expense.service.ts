@@ -12,6 +12,7 @@ import { ExpenseValidation } from './expense.validation';
 import { WebResponse } from '../model/web.model';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { SummaryCalc } from '../common/summary.calc';
 
 @Injectable()
 export class ExpenseService {
@@ -19,6 +20,7 @@ export class ExpenseService {
     private prismaService: PrismaService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private validationServide: ValidationService,
+    private summaryCalc: SummaryCalc,
   ) {}
 
   async insert(
@@ -36,6 +38,8 @@ export class ExpenseService {
         ...{ id_user: user.id },
       },
     });
+
+    await this.summaryCalc.calculateCreatedExpensesTotal(expense);
 
     return {
       id: expense.id,
@@ -119,14 +123,17 @@ export class ExpenseService {
       request,
     );
 
-    let expense = await this.checkExpenseMustValid(user.id, updateRequest.id);
+    const oldExpense = await this.checkExpenseMustValid(
+      user.id,
+      updateRequest.id,
+    );
 
-    if (!expense) {
+    if (!oldExpense) {
       throw new HttpException('Unauthorized', 401);
     }
 
-    expense = await this.prismaService.expense.update({
-      where: { id: expense.id },
+    const newExpense = await this.prismaService.expense.update({
+      where: { id: oldExpense.id },
       data: {
         expense: updateRequest.expense,
         expense_name: updateRequest.expense_name,
@@ -134,7 +141,12 @@ export class ExpenseService {
       },
     });
 
-    return expense;
+    await this.summaryCalc.calculateUpdatedExpensesTotal(
+      oldExpense,
+      newExpense.expense,
+    );
+
+    return newExpense;
   }
 
   async remove(user: User, id: string) {
@@ -145,6 +157,9 @@ export class ExpenseService {
     await this.prismaService.expense.delete({
       where: { id: id },
     });
+
+    await this.summaryCalc.calculateDeletedExpensesTotal(expense);
+
     return;
   }
 }
