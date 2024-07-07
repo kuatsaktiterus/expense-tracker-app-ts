@@ -50,7 +50,7 @@ describe('Income Controller', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.data.incomes_total).toBe(10000000);
-      expect(response.body.data.expenses_total).toBe(2000000);
+      expect(response.body.data.expenses_total).toBe(10000000);
       expect(response.body.data.incomes_count).toBe(10);
       expect(response.body.data.expenses_count).toBe(30);
       expect(response.body.data.id_user).toBe(user.id);

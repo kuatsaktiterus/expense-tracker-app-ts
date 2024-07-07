@@ -3,29 +3,19 @@ import { User } from '@prisma/client';
 import { PrismaService } from '../common/prisma.service';
 import { WebResponse } from '../model/web.model';
 import { Auth } from '../common/auth.decorator';
+import { SummaryResponse } from './summary.model';
+import { SummaryService } from './summary.service';
 
 @Controller('api/v1/summaries')
 export class SummaryController {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private summaryService: SummaryService) {}
 
   @Get()
   @HttpCode(200)
   async get(@Auth() user: User): Promise<WebResponse<SummaryResponse>> {
-    const summary = await this.prismaService.summary.findFirst({
-      where: { id_user: user.id },
-    });
-
+    const summary = await this.summaryService.get(user);
     return {
       data: summary,
     };
   }
 }
-
-type SummaryResponse = {
-  id: string;
-  incomes_total: number;
-  expenses_total: number;
-  incomes_count: number;
-  expenses_count: number;
-  id_user: string;
-};

@@ -12,16 +12,13 @@ export class SummaryCalc {
   ) {}
 
   async calculateCreatedIncomesTotal(income: Income) {
-    let id: string;
-    let newIncome: number;
+    let id: string = '';
+    let newIncome: number = income.income;
     const summary = await this.prismaService.summary.findFirst({
       where: { id_user: income.id_user },
     });
 
-    if (!summary) {
-      newIncome = income.income;
-      id = '';
-    } else {
+    if (summary) {
       newIncome = income.income + (summary.incomes_total || 0);
       id = summary.id;
     }
@@ -41,16 +38,13 @@ export class SummaryCalc {
   }
 
   async calculateCreatedExpensesTotal(expense: Expense) {
-    let id: string;
-    let newExpense: number;
+    let id: string = '';
+    let newExpense: number = expense.expense;
     const summary = await this.prismaService.summary.findFirst({
       where: { id_user: expense.id_user },
     });
 
-    if (!summary) {
-      newExpense = expense.expense;
-      id = '';
-    } else {
+    if (summary) {
       newExpense = expense.expense + (summary.expenses_total || 0);
       id = summary.id;
     }
