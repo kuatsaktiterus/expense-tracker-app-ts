@@ -26,13 +26,7 @@ export class UserService {
     const registerRequest: RegisterUserRequest =
       this.validationService.validate(UserValidation.REGISTER, request);
 
-    const totalUserWithSameUsername = await this.prismaService.user.count({
-      where: { username: registerRequest.username },
-    });
-
-    if (totalUserWithSameUsername != 0) {
-      throw new HttpException(`Username Already Exist`, 400);
-    }
+    await this.checkUserExist(registerRequest.username);
 
     registerRequest.password = await bcrypt.hash(registerRequest.password, 10);
 
@@ -99,6 +93,16 @@ export class UserService {
     };
   }
 
+  async checkUserExist(username: string) {
+    const totalUserWithSameUsername = await this.prismaService.user.count({
+      where: { username },
+    });
+
+    if (totalUserWithSameUsername != 0) {
+      throw new HttpException(`Username Already Exist`, 400);
+    }
+  }
+
   async update(user: User, request: UpdateUserRequest): Promise<UserResponse> {
     this.logger.debug(`UserService.update(${user.id}, ${request.username})`);
     const updateRequest: UpdateUserRequest = this.validationService.validate(
@@ -113,6 +117,8 @@ export class UserService {
     if (updateRequest.password) {
       user.password = await bcrypt.hash(updateRequest.password, 10);
     }
+
+    await this.checkUserExist(user.username);
 
     const result = await this.prismaService.user.update({
       where: { id: user.id },
