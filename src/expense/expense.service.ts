@@ -21,7 +21,7 @@ export class ExpenseService {
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private validationServide: ValidationService,
     private summaryCalc: SummaryCalc,
-  ) { }
+  ) {}
 
   async insert(
     user: User,
@@ -133,7 +133,7 @@ export class ExpenseService {
         expense: updateRequest.expense,
         expense_name: updateRequest.expense_name,
         date_of_expense: updateRequest.date_of_expense,
-        id_category: updateRequest.id_category
+        id_category: updateRequest.id_category,
       },
     });
 

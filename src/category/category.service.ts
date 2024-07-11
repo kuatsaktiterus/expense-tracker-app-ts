@@ -20,20 +20,18 @@ export class CategoryService {
   constructor(
     private prismaService: PrismaService,
     private validationService: ValidationService,
-    @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger
-  ) { }
+    @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
+  ) {}
 
   async insert(request: InsertCategoryRequest): Promise<CategoryResponse> {
-    const insertRequest: InsertCategoryRequest = this.validationService.validate(
-      CategoryValidation.INSERT,
-      request,
-    );
+    const insertRequest: InsertCategoryRequest =
+      this.validationService.validate(CategoryValidation.INSERT, request);
 
     const category = await this.prismaService.category.create({
       data: insertRequest,
     });
 
-    return this.toCategoryResponse(category)
+    return this.toCategoryResponse(category);
   }
 
   toCategoryResponse(category: Category): CategoryResponse {
@@ -55,14 +53,15 @@ export class CategoryService {
 
     const skip = (listRequest.page - 1) * listRequest.size;
 
-    const [totalOfCategories, categories] = await this.prismaService.$transaction([
-      this.prismaService.category.count(),
-      this.prismaService.category.findMany({
-        where: { id_user: user.id },
-        skip: skip,
-        take: listRequest.size,
-      }),
-    ]);
+    const [totalOfCategories, categories] =
+      await this.prismaService.$transaction([
+        this.prismaService.category.count(),
+        this.prismaService.category.findMany({
+          where: { id_user: user.id },
+          skip: skip,
+          take: listRequest.size,
+        }),
+      ]);
 
     return {
       data: categories.map((_) => this.toCategoryResponse(_)),
@@ -76,19 +75,23 @@ export class CategoryService {
 
   async checkCategoryExistence(user: User, id: string): Promise<Category> {
     return await this.prismaService.category.findFirst({
-      where: { id, id_user: user.id }
+      where: { id, id_user: user.id },
     });
   }
 
-  async update(user: User, request: UpdateCategoryRequest): Promise<CategoryResponse> {
-    const updateRequest: UpdateCategoryRequest = this.validationService.validate(CategoryValidation.UPDATE, request);
+  async update(
+    user: User,
+    request: UpdateCategoryRequest,
+  ): Promise<CategoryResponse> {
+    const updateRequest: UpdateCategoryRequest =
+      this.validationService.validate(CategoryValidation.UPDATE, request);
 
     let category = await this.checkCategoryExistence(user, updateRequest.id);
 
     category = await this.prismaService.category.update({
       where: { id: category.id },
       data: {
-        category: updateRequest.category
+        category: updateRequest.category,
       },
     });
 
@@ -96,19 +99,25 @@ export class CategoryService {
   }
 
   async get(user: User, request: IdCategoryRequest): Promise<CategoryResponse> {
-    const getRequest: IdCategoryRequest = this.validationService.validate(CategoryValidation.GET, request)
+    const getRequest: IdCategoryRequest = this.validationService.validate(
+      CategoryValidation.GET,
+      request,
+    );
     const category = await this.checkCategoryExistence(user, getRequest.id);
 
     return this.toCategoryResponse(category);
   }
 
   async remove(user: User, request: IdCategoryRequest) {
-    const removeRequest: IdCategoryRequest = this.validationService.validate(CategoryValidation.GET, request)
+    const removeRequest: IdCategoryRequest = this.validationService.validate(
+      CategoryValidation.GET,
+      request,
+    );
     await this.prismaService.category.delete({
       where: {
         id: removeRequest.id,
-        id_user: user.id
-      }
+        id_user: user.id,
+      },
     });
   }
 }

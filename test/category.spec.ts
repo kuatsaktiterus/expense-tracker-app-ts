@@ -33,11 +33,12 @@ describe('Category Controller', () => {
     it('should be rejected if request is invalid', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/categories')
-        .set("Authorization", "test")
+        .set('Authorization', 'test')
         .send({
           category: '',
           id_user: '',
-        }); logger.info(response.body);
+        });
+      logger.info(response.body);
 
       expect(response.status).toBe(400);
       expect(response.body.errors).toBeDefined();
@@ -47,7 +48,7 @@ describe('Category Controller', () => {
       const user = await testService.getUser();
       const response = await request(app.getHttpServer())
         .post('/api/v1/categories')
-        .set("Authorization", "test")
+        .set('Authorization', 'test')
         .send({
           category: 'Kuliah',
         });
@@ -68,7 +69,7 @@ describe('Category Controller', () => {
     it('should be rejected if request is invalid', async () => {
       const response = await request(app.getHttpServer())
         .post('/api/v1/categories')
-        .set("Authorization", "test")
+        .set('Authorization', 'test')
         .send({
           page: '',
           size: '',
@@ -82,7 +83,7 @@ describe('Category Controller', () => {
     it('should be able to list category', async () => {
       const response = await request(app.getHttpServer())
         .get('/api/v1/categories')
-        .set("Authorization", "test")
+        .set('Authorization', 'test')
         .send({
           page: 1,
           size: 10,
@@ -152,7 +153,7 @@ describe('Category Controller', () => {
       const category = await testService.getCategory();
       const response = await request(app.getHttpServer())
         .get(`/api/v1/categories/${category.id + 1}`)
-        .set("Authorization", "test");
+        .set('Authorization', 'test');
       logger.info(response.body);
 
       expect(response.status).toBe(400);
@@ -164,7 +165,7 @@ describe('Category Controller', () => {
       const category = await testService.getCategory();
       const response = await request(app.getHttpServer())
         .get(`/api/v1/categories/${category.id}`)
-        .set("Authorization", "test")
+        .set('Authorization', 'test');
       logger.info(response.body);
 
       expect(response.status).toBe(200);
@@ -183,7 +184,7 @@ describe('Category Controller', () => {
       const category = await testService.getCategory();
       const response = await request(app.getHttpServer())
         .put(`/api/v1/categories/${category.id}`)
-        .set("Authorization", "test")
+        .set('Authorization', 'test')
         .send({
           category: '',
         });
@@ -197,7 +198,7 @@ describe('Category Controller', () => {
       const category = await testService.getCategory();
       const response = await request(app.getHttpServer())
         .put(`/api/v1/categories/${category.id + 1}`)
-        .set("Authorization", "test")
+        .set('Authorization', 'test')
         .send({
           category: 'Kuliah updated',
         });
@@ -212,12 +213,11 @@ describe('Category Controller', () => {
       const category = await testService.getCategory();
       const response = await request(app.getHttpServer())
         .put(`/api/v1/categories/${category.id}`)
-        .set("Authorization", "test")
+        .set('Authorization', 'test')
         .send({
           category: 'Kuliah updated',
         });
       logger.info(response.body);
-
 
       expect(response.status).toBe(200);
       expect(response.body.data.category).toBe('Kuliah updated');
@@ -235,7 +235,7 @@ describe('Category Controller', () => {
       const category = await testService.getCategory();
       const response = await request(app.getHttpServer())
         .delete(`/api/v1/categories/${category.id + 1}`)
-        .set("Authorization", "test");
+        .set('Authorization', 'test');
       logger.info(response.body);
 
       expect(response.status).toBe(400);
@@ -246,7 +246,7 @@ describe('Category Controller', () => {
       const category = await testService.getCategory();
       const response = await request(app.getHttpServer())
         .delete(`/api/v1/categories/${category.id}`)
-        .set("Authorization", "test")
+        .set('Authorization', 'test');
       logger.info(response.body);
 
       expect(response.status).toBe(200);

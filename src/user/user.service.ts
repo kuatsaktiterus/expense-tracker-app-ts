@@ -20,7 +20,7 @@ export class UserService {
     private validationService: ValidationService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private prismaService: PrismaService,
-  ) { }
+  ) {}
 
   async register(request: RegisterUserRequest): Promise<UserResponse> {
     const registerRequest: RegisterUserRequest =

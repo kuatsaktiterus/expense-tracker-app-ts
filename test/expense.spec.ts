@@ -184,7 +184,7 @@ describe('Expense Controller', () => {
           expense: 100000,
           expense_name: 'test update expense',
           date_of_expense: new Date('2024-01-02'),
-          id_category: category.id
+          id_category: category.id,
         });
       logger.info(response.body);
 
@@ -212,7 +212,7 @@ describe('Expense Controller', () => {
           expense: 4000000,
           expense_name: 'test update expense',
           date_of_expense: new Date('2024-01-02'),
-          id_category: category.id
+          id_category: category.id,
         });
       logger.info(response.body);
 

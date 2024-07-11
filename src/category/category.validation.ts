@@ -14,14 +14,14 @@ export class CategoryValidation {
 
   static readonly UPDATE: ZodType = z.object({
     category: z.string().min(1).max(255).optional(),
-    id: z.string().refine(data => ObjectID.isValid(data), {
-      message: "Id is not valid"
+    id: z.string().refine((data) => ObjectID.isValid(data), {
+      message: 'Id is not valid',
     }),
   });
 
   static readonly GET: ZodType = z.object({
-    id: z.string().refine(data => ObjectID.isValid(data), {
-      message: "Id is not valid"
+    id: z.string().refine((data) => ObjectID.isValid(data), {
+      message: 'Id is not valid',
     }),
   });
 }
