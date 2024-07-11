@@ -20,7 +20,7 @@ export class UserService {
     private validationService: ValidationService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private prismaService: PrismaService,
-  ) {}
+  ) { }
 
   async register(request: RegisterUserRequest): Promise<UserResponse> {
     const registerRequest: RegisterUserRequest =
@@ -110,15 +110,16 @@ export class UserService {
       request,
     );
 
+    this.logger.debug(`UserService update(${updateRequest.password})`);
+
     if (updateRequest.username) {
       user.username = updateRequest.username;
+      await this.checkUserExist(user.username);
     }
 
     if (updateRequest.password) {
       user.password = await bcrypt.hash(updateRequest.password, 10);
     }
-
-    await this.checkUserExist(user.username);
 
     const result = await this.prismaService.user.update({
       where: { id: user.id },

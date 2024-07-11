@@ -1,6 +1,5 @@
 import { Controller, Get, HttpCode } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { PrismaService } from '../common/prisma.service';
 import { WebResponse } from '../model/web.model';
 import { Auth } from '../common/auth.decorator';
 import { SummaryResponse } from './summary.model';

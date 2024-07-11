@@ -21,7 +21,7 @@ export class ExpenseService {
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private validationServide: ValidationService,
     private summaryCalc: SummaryCalc,
-  ) {}
+  ) { }
 
   async insert(
     user: User,
@@ -41,13 +41,7 @@ export class ExpenseService {
 
     await this.summaryCalc.calculateCreatedExpensesTotal(expense);
 
-    return {
-      id: expense.id,
-      expense: expense.expense,
-      expense_name: expense.expense_name,
-      date_of_expense: expense.date_of_expense,
-      id_user: expense.id_user,
-    };
+    return this.toExpenseResponse(expense);
   }
 
   async list(
@@ -90,6 +84,7 @@ export class ExpenseService {
       expense_name: expense.expense_name,
       date_of_expense: expense.date_of_expense,
       id_user: expense.id_user,
+      id_category: expense.id_category,
     };
   }
 
@@ -138,6 +133,7 @@ export class ExpenseService {
         expense: updateRequest.expense,
         expense_name: updateRequest.expense_name,
         date_of_expense: updateRequest.date_of_expense,
+        id_category: updateRequest.id_category
       },
     });
 

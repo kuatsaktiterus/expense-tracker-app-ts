@@ -29,6 +29,7 @@ describe('Expense Controller', () => {
     beforeEach(async () => {
       await testService.createUser();
       await testService.createSummary();
+      await testService.createCategory();
     });
 
     it('should be rejected if request is invalid', async () => {
@@ -39,6 +40,7 @@ describe('Expense Controller', () => {
           expense: 0,
           expense_name: '',
           date_of_expense: '',
+          id_category: '',
         });
       logger.info(response.body);
 
@@ -47,6 +49,7 @@ describe('Expense Controller', () => {
     });
 
     it('should be able to insert expense', async () => {
+      const category = await testService.getCategory();
       const user = await testService.getUser();
       const time = new Date('2024-01-01');
       const response = await request(app.getHttpServer())
@@ -56,6 +59,7 @@ describe('Expense Controller', () => {
           expense: 300000,
           expense_name: 'uang jajan minggu ini',
           date_of_expense: time,
+          id_category: category.id,
         });
       logger.info(response.body);
 
@@ -70,13 +74,15 @@ describe('Expense Controller', () => {
       expect(summary.expenses_total).toBe(10300000);
       expect(response.body.data.expense_name).toBe('uang jajan minggu ini');
       expect(dateOfExpense).toBe(`${time}`);
+      expect(response.body.data.id_category).toBe(category.id);
       expect(response.body.data.id_user).toBe(user.id);
     });
   });
 
-  describe('GET /api/v1/expenses', () => {
+  describe('GET LIST /api/v1/expenses', () => {
     beforeEach(async () => {
       await testService.createUser();
+      await testService.createCategory();
       await testService.createExpense();
     });
 
@@ -111,6 +117,7 @@ describe('Expense Controller', () => {
   describe('GET /api/v1/expenses/:id', () => {
     beforeEach(async () => {
       await testService.createUser();
+      await testService.createCategory();
       await testService.createExpense();
     });
 
@@ -125,7 +132,7 @@ describe('Expense Controller', () => {
       expect(response.body.errors).toBeDefined();
     });
 
-    it('should be able to list expense', async () => {
+    it('should be able to get an expense', async () => {
       const expense = await testService.getExpense();
       const user = await testService.getUser();
       const response = await request(app.getHttpServer())
@@ -146,6 +153,7 @@ describe('Expense Controller', () => {
   describe('PUT /api/v1/expenses/:id', () => {
     beforeEach(async () => {
       await testService.createUser();
+      await testService.createCategory();
       await testService.createExpense();
       await testService.createSummary();
     });
@@ -166,6 +174,7 @@ describe('Expense Controller', () => {
     });
 
     it('should be able to update expense and summary get lower', async () => {
+      const category = await testService.getCategory();
       const expense = await testService.getExpense();
       const user = await testService.getUser();
       const response = await request(app.getHttpServer())
@@ -175,6 +184,7 @@ describe('Expense Controller', () => {
           expense: 100000,
           expense_name: 'test update expense',
           date_of_expense: new Date('2024-01-02'),
+          id_category: category.id
         });
       logger.info(response.body);
 
@@ -187,10 +197,12 @@ describe('Expense Controller', () => {
       expect(response.body.data.date_of_expense).toBe(
         new Date('2024-01-02').toISOString(),
       );
+      expect(response.body.data.id_category).toBe(category.id);
       expect(response.body.data.id_user).toBe(user.id);
     });
 
     it('should be able to update expense and summary get higher', async () => {
+      const category = await testService.getCategory();
       const expense = await testService.getExpense();
       const user = await testService.getUser();
       const response = await request(app.getHttpServer())
@@ -200,6 +212,7 @@ describe('Expense Controller', () => {
           expense: 4000000,
           expense_name: 'test update expense',
           date_of_expense: new Date('2024-01-02'),
+          id_category: category.id
         });
       logger.info(response.body);
 
@@ -212,6 +225,7 @@ describe('Expense Controller', () => {
       expect(response.body.data.date_of_expense).toBe(
         new Date('2024-01-02').toISOString(),
       );
+      expect(response.body.data.id_category).toBe(category.id);
       expect(response.body.data.id_user).toBe(user.id);
     });
 
@@ -226,7 +240,7 @@ describe('Expense Controller', () => {
         });
       logger.info(response.body);
 
-      expect(response.status).toBe(401);
+      expect(response.status).toBe(400);
       expect(response.body.errors).toBeDefined();
     });
   });
@@ -234,6 +248,7 @@ describe('Expense Controller', () => {
   describe('DELETE /api/v1/expenses/:id', () => {
     beforeEach(async () => {
       await testService.createUser();
+      await testService.createCategory();
       await testService.createExpense();
       await testService.createSummary();
     });

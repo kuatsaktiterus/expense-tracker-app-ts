@@ -3,6 +3,7 @@ export class ExpenseResponse {
   expense: number;
   expense_name: string;
   date_of_expense: Date;
+  id_category: string;
   id_user: string;
 }
 
@@ -10,7 +11,7 @@ export class InsertExpenseRequest {
   expense: number;
   expense_name: string;
   date_of_expense: Date;
-  id_user: string;
+  id_category: string;
 }
 
 export class ListExpenseRequest {
@@ -23,4 +24,5 @@ export class updateExpenseRequest {
   expense: number;
   expense_name: string;
   date_of_expense: Date;
+  id_category: string;
 }

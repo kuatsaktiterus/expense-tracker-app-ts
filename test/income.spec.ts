@@ -45,7 +45,7 @@ describe('Income Controller', () => {
       expect(response.body.errors).toBeDefined();
     });
 
-    it('should be able to insert expense', async () => {
+    it('should be able to insert incomes', async () => {
       const user = await testService.getUser();
       const time = new Date('2024-01-01');
       const response = await request(app.getHttpServer())

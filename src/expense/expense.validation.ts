@@ -5,6 +5,7 @@ export class ExpenseValidation {
     expense: z.number().positive(),
     expense_name: z.string().min(1).max(255),
     date_of_expense: z.coerce.date(),
+    id_category: z.string(),
   });
 
   static readonly LIST: ZodType = z.object({
@@ -17,5 +18,6 @@ export class ExpenseValidation {
     expense: z.number().positive(),
     expense_name: z.string().min(1).max(255),
     date_of_expense: z.coerce.date(),
+    id_category: z.string()
   });
 }

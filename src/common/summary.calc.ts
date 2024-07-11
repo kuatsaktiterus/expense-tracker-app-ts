@@ -32,6 +32,8 @@ export class SummaryCalc {
       create: {
         incomes_total: newIncome,
         incomes_count: 1,
+        expenses_total: 0,
+        expenses_count: 0,
         id_user: income.id_user,
       },
     });
@@ -58,6 +60,8 @@ export class SummaryCalc {
       create: {
         expenses_total: newExpense,
         expenses_count: 1,
+        incomes_total: 0,
+        incomes_count: 0,
         id_user: expense.id_user,
       },
     });

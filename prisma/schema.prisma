@@ -14,13 +14,14 @@ datasource db {
 }
 
 model User {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
-  username String    @unique
+  id       String     @id @default(auto()) @map("_id") @db.ObjectId
+  username String     @unique
   password String
   token    String?
   Income   Income[]
   Expense  Expense[]
   Summary  Summary?
+  Category Category[]
 
   @@map("users")
 }
@@ -30,9 +31,11 @@ model Expense {
   expense         Int
   expense_name    String
   date_of_expense DateTime
+  id_category     String   @db.ObjectId
   id_user         String   @db.ObjectId
 
-  user User? @relation(fields: [id_user], references: [id])
+  user     User?     @relation(fields: [id_user], references: [id])
+  category Category? @relation(fields: [id_category], references: [id])
 
   @@map("expenses")
 }
@@ -60,4 +63,15 @@ model Summary {
   user User @relation(fields: [id_user], references: [id])
 
   @@map("summaries")
+}
+
+model Category {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  category String
+  id_user  String @unique @db.ObjectId
+
+  Expense Expense[]
+  user    User?     @relation(fields: [id_user], references: [id])
+
+  @@map("categories")
 }
