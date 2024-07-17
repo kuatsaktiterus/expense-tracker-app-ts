@@ -28,7 +28,7 @@ export class CategoryController {
   constructor(
     private categoryService: CategoryService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
-  ) {}
+  ) { }
 
   @Post()
   @HttpCode(200)
