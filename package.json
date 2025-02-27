@@ -76,5 +76,16 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@nestjs/core",
+      "@prisma/client",
+      "@prisma/engines"
+    ],
+    "onlyBuiltDependencies": [
+      "bcrypt",
+      "prisma"
+    ]
   }
 }
