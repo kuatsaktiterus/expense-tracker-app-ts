@@ -20,7 +20,7 @@ export class UserService {
     private validationService: ValidationService,
     @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
     private prismaService: PrismaService,
-  ) {}
+  ) { }
 
   async register(request: RegisterUserRequest): Promise<UserResponse> {
     const registerRequest: RegisterUserRequest =
@@ -28,7 +28,7 @@ export class UserService {
 
     await this.checkUserExist(registerRequest.username);
 
-    registerRequest.password = await bcrypt.hash(registerRequest.password, 10);
+    registerRequest.password = await bcrypt.hash(registerRequest.password, 15);
 
     const user = await this.prismaService.user.create({
       data: registerRequest,

@@ -7,7 +7,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { TestService } from './test.service';
 import { TestModule } from './test.module';
 
-describe('Income Controller', () => {
+describe('Summary Controller', () => {
   let app: INestApplication;
   let logger: Logger;
   let testService: TestService;
